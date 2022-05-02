@@ -10,6 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cqrs.Context;
+using Cqrs.Repository;
+using Cqrs.Service;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cqrs
 {
@@ -31,6 +36,28 @@ namespace Cqrs
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Cqrs", Version = "v1" });
             });
+
+            services.AddMediatR(typeof(Program).Assembly);
+            services.AddScoped<IProductRepository, ProductRepository>();
+
+
+
+            string connectionString = Configuration.GetConnectionString("DefaultContextConnection");
+
+
+            #region SqlServer
+
+            services.AddDbContext<CqrsContext>(options =>
+                {
+                    options.UseSqlServer(connectionString);
+                }
+            );
+
+
+            #endregion
+
+
+          
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
